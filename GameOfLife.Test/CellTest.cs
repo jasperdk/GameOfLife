@@ -10,8 +10,8 @@ namespace GameOfLife.Test
     public void CanCreateCell()
     {
       var cell = new Cell(1, 2, Cell.Alive);
-      Assert.That(cell.X, Is.EqualTo(1));
-      Assert.That(cell.Y, Is.EqualTo(2));
+      Assert.That(cell.Row, Is.EqualTo(1));
+      Assert.That(cell.Column, Is.EqualTo(2));
       Assert.That(cell.State, Is.EqualTo(Cell.Alive));
     }
 

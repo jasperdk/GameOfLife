@@ -9,7 +9,7 @@ namespace ConsoleApplication
     public static void Main(string[] args)
     {
       //var gol = new GameOfLifeView(new GameOfLife(3, 3));
-      //gol.Seed(
+      //gol.Initialize(
       //  " * ",
       //  " * ",
       //  " * ");

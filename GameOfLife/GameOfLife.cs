@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Game
@@ -7,12 +8,12 @@ namespace Game
   {
     private Cell[][] _cells;
 
-    public GameOfLife(int x, int y)
+    public GameOfLife(int rows, int columns)
     {
-      _cells = new Cell[x][];
-      for (int i = 0; i < x; i++)
+      _cells = new Cell[rows][];
+      for (int i = 0; i < rows; i++)
       {
-        _cells[i] = new Cell[y];
+        _cells[i] = new Cell[columns];
       }
     }
 
@@ -23,6 +24,12 @@ namespace Game
 
     public void Seed(Cell[][] cells)
     {
+      var columns = cells[0].Length;
+      if (cells.Any(cellRow => cellRow.Length != columns))
+      {
+        throw new ArgumentException("All rows must contain the same number of columns!");
+      }
+
       _cells = cells;
     }
 
@@ -30,9 +37,9 @@ namespace Game
     {
       var newCells = CopyCells();
 
-      foreach (var cellLine in _cells)
+      foreach (var cellRow in _cells)
       {
-        foreach (var cell in cellLine)
+        foreach (var cell in cellRow)
         {
           var livingNeighbours = GetLivingNeighboursCount(cell);
           ExecuteKillRule(cell, livingNeighbours, newCells);
@@ -47,7 +54,7 @@ namespace Game
     {
       if (cell.IsDead && livingNeighbours == 3)
       {
-        newCells[cell.X][cell.Y].WakeUp();
+        newCells[cell.Row][cell.Column].WakeUp();
       }
     }
 
@@ -55,7 +62,7 @@ namespace Game
     {
       if (cell.IsAlive && (livingNeighbours < 2 || livingNeighbours > 3))
       {
-        newCells[cell.X][cell.Y].Kill();
+        newCells[cell.Row][cell.Column].Kill();
       }
     }
 
@@ -68,48 +75,46 @@ namespace Game
     {
       var neighbours = new List<Cell>();
 
-      //Get neighbours from line above
-      if (cell.X > 0)
+      //Get neighbours from row above
+      if (cell.Row > 0)
       {
-        neighbours.AddRange(GetNeighboursFromLine(cell.X - 1, cell.Y));
+        AddNeighboursFromRow(neighbours,cell.Row - 1, cell.Column);
       }
 
-      //Get neighbours from same line
-      if (cell.Y > 0)
-        neighbours.Add(_cells[cell.X][cell.Y - 1]);
-      if (cell.Y < _cells[cell.X].Length - 1)
-        neighbours.Add(_cells[cell.X][cell.Y + 1]);
+      //Get neighbours from same row
+      if (cell.Column > 0)
+        neighbours.Add(_cells[cell.Row][cell.Column - 1]);
+      if (cell.Column < _cells[cell.Row].Length - 1)
+        neighbours.Add(_cells[cell.Row][cell.Column + 1]);
 
-      //Get neighbours from line below
-      if (cell.X < _cells.Length - 1)
+      //Get neighbours from row below
+      if (cell.Row < _cells.Length - 1)
       {
-        neighbours.AddRange(GetNeighboursFromLine(cell.X + 1, cell.Y));
+        AddNeighboursFromRow(neighbours,cell.Row + 1, cell.Column);
       }
 
       return neighbours;
     }
 
-    private IEnumerable<Cell> GetNeighboursFromLine(int lineNumber, int rowNumber)
+    private void AddNeighboursFromRow(List<Cell> neighbours, int rowNumber, int columnNumber)
     {
-      var result = new List<Cell>();
-      if (rowNumber > 0)
-        result.Add(_cells[lineNumber][rowNumber - 1]);
-      result.Add(_cells[lineNumber][rowNumber]);
-      if (rowNumber < _cells[lineNumber].Length - 1)
-        result.Add(_cells[lineNumber][rowNumber + 1]);
-      return result;
+      if (columnNumber > 0)
+        neighbours.Add(_cells[rowNumber][columnNumber - 1]);
+      neighbours.Add(_cells[rowNumber][columnNumber]);
+      if (columnNumber < _cells[rowNumber].Length - 1)
+        neighbours.Add(_cells[rowNumber][columnNumber + 1]);
     }
 
     private Cell[][] CopyCells()
     {
       var cells = new Cell[_cells.Length][];
-      for (var indexX = 0; indexX < _cells.Length; indexX++)
+      for (var row = 0; row < _cells.Length; row++)
       {
-        cells[indexX] = new Cell[_cells[indexX].Length];
+        cells[row] = new Cell[_cells[row].Length];
 
-        for (var indexY = 0; indexY < _cells[indexX].Length; indexY++)
+        for (var column = 0; column < _cells[row].Length; column++)
         {
-          cells[indexX][indexY] = new Cell(_cells[indexX][indexY]);
+          cells[row][column] = new Cell(_cells[row][column]);
         }
       }
 

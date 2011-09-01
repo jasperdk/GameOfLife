@@ -39,12 +39,12 @@ namespace ConsoleApplication
     public void Initialize(params string[] lines)
     {
       var cells = new Cell[lines.Length][];
-      for (int indexX = 0; indexX < lines.Length; indexX++)
+      for (int row = 0; row < lines.Length; row++)
       {
-        cells[indexX] = new Cell[lines[indexX].Length];
-        for (int indexY = 0; indexY < lines[indexX].Length; indexY++)
+        cells[row] = new Cell[lines[row].Length];
+        for (int column = 0; column < lines[row].Length; column++)
         {
-          cells[indexX][indexY] = new Cell(indexX, indexY, lines[indexX][indexY]);
+          cells[row][column] = new Cell(row, column, lines[row][column]);
         }
       }
 

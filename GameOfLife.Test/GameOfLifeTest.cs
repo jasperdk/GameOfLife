@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Game;
 using NUnit.Framework;
@@ -13,9 +14,9 @@ namespace GameOfLifeTest
     {
       var gol = new Game.GameOfLife(3, 3);
       Assert.That(gol.Cells.Length, Is.EqualTo(3));
-      foreach (var cellLine in gol.Cells)
+      foreach (var cellRow in gol.Cells)
       {
-        Assert.That(cellLine.Length, Is.EqualTo(3));
+        Assert.That(cellRow.Length, Is.EqualTo(3));
       }
     }
 
@@ -33,6 +34,22 @@ namespace GameOfLifeTest
       Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
       Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("   "), "2");
       Assert.That(CellsToString(gol.Cells[2]), Is.EqualTo("   "), "3");
+    }
+
+    [Test]
+    public void CanHandleWrongSeed()
+    {
+      var gol = new Game.GameOfLife(3, 3);
+      Assert.Throws<ArgumentException>(delegate
+                                         {
+                                           gol.Seed(
+                                             CreateCells(
+                                               "   ",
+                                               "  ",
+                                               " ")
+                                             );
+                                         }
+        );
     }
 
     [Test]
@@ -186,12 +203,12 @@ namespace GameOfLifeTest
     private static Cell[][] CreateCells(params string[] s)
     {
       var cells = new Cell[s.Length][];
-      for (int indexX = 0; indexX < s.Length; indexX++)
+      for (int row = 0; row < s.Length; row++)
       {
-        cells[indexX] = new Cell[s[indexX].Length];
-        for (int indexY = 0; indexY < s[indexX].Length; indexY++)
+        cells[row] = new Cell[s[row].Length];
+        for (int column = 0; column < s[row].Length; column++)
         {
-          cells[indexX][indexY] = new Cell(indexX, indexY, s[indexX][indexY]);
+          cells[row][column] = new Cell(row, column, s[row][column]);
         }
       }
 

@@ -7,15 +7,15 @@
     public const char Alive = '*';
     public const char Dead = ' ';
 
-    private readonly int _x;
-    private readonly int _y;
+    private readonly int _row;
+    private readonly int _column;
 
     private CellState _state;
 
-    public Cell(int x, int y, char state)
+    public Cell(int row, int column, char state)
     {
-      _x = x;
-      _y = y;
+      _row = row;
+      _column = column;
       if (state == Alive)
         _state = CellState.Alive;
       else
@@ -23,7 +23,7 @@
     }
 
     public Cell(Cell cell)
-      : this(cell.X, cell.Y, cell.State)
+      : this(cell.Row, cell.Column, cell.State)
     {
     }
 
@@ -37,19 +37,19 @@
       }
     }
 
-    public int X
+    public int Row
     {
       get
       {
-        return _x;
+        return _row;
       }
     }
 
-    public int Y
+    public int Column
     {
       get
       {
-        return _y;
+        return _column;
       }
     }
 
