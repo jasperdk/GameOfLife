@@ -21,12 +21,12 @@ namespace Game
       get { return _cells; }
     }
 
-    public void Initialize(Cell[][] cells)
+    public void Seed(Cell[][] cells)
     {
       _cells = cells;
     }
 
-    public void Proces()
+    public void Tick()
     {
       var newCells = CopyCells();
 
@@ -64,33 +64,40 @@ namespace Game
       return GetNeighbours(cell).Where(c => c.IsAlive).Count();
     }
 
-    private IList<Cell> GetNeighbours(Cell cell)
+    private IEnumerable<Cell> GetNeighbours(Cell cell)
     {
       var neighbours = new List<Cell>();
+
+      //Get neighbours from line above
       if (cell.X > 0)
       {
-        if (cell.Y > 0)
-          neighbours.Add(_cells[cell.X - 1][cell.Y - 1]);
-        neighbours.Add(_cells[cell.X - 1][cell.Y]);
-        if (cell.Y < _cells[cell.X - 1].Length - 1)
-          neighbours.Add(_cells[cell.X - 1][cell.Y + 1]);
+        neighbours.AddRange(GetNeighboursFromLine(cell.X - 1, cell.Y));
       }
 
+      //Get neighbours from same line
       if (cell.Y > 0)
         neighbours.Add(_cells[cell.X][cell.Y - 1]);
       if (cell.Y < _cells[cell.X].Length - 1)
         neighbours.Add(_cells[cell.X][cell.Y + 1]);
 
+      //Get neighbours from line below
       if (cell.X < _cells.Length - 1)
       {
-        if (cell.Y > 0)
-          neighbours.Add(_cells[cell.X + 1][cell.Y - 1]);
-        neighbours.Add(_cells[cell.X + 1][cell.Y]);
-        if (cell.Y < _cells[cell.X].Length - 1)
-          neighbours.Add(_cells[cell.X + 1][cell.Y + 1]);
+        neighbours.AddRange(GetNeighboursFromLine(cell.X + 1, cell.Y));
       }
 
       return neighbours;
+    }
+
+    private IEnumerable<Cell> GetNeighboursFromLine(int lineNumber, int rowNumber)
+    {
+      var result = new List<Cell>();
+      if (rowNumber > 0)
+        result.Add(_cells[lineNumber][rowNumber - 1]);
+      result.Add(_cells[lineNumber][rowNumber]);
+      if (rowNumber < _cells[lineNumber].Length - 1)
+        result.Add(_cells[lineNumber][rowNumber + 1]);
+      return result;
     }
 
     private Cell[][] CopyCells()

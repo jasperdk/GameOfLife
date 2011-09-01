@@ -9,7 +9,7 @@ namespace ConsoleApplication
     public static void Main(string[] args)
     {
       //var gol = new GameOfLifeView(new GameOfLife(3, 3));
-      //gol.Initialize(
+      //gol.Seed(
       //  " * ",
       //  " * ",
       //  " * ");
@@ -35,7 +35,7 @@ namespace ConsoleApplication
           Console.WriteLine(line);
         }
         Thread.Sleep(1000);
-        gol.GameOfLife.Proces();
+        gol.GameOfLife.Tick();
       }
     }
   }

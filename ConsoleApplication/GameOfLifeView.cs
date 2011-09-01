@@ -48,7 +48,7 @@ namespace ConsoleApplication
         }
       }
 
-      _gameOfLife.Initialize(cells);
+      _gameOfLife.Seed(cells);
     }
   }
 }

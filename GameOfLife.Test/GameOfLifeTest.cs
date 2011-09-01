@@ -23,7 +23,7 @@ namespace GameOfLifeTest
     public void CanInitalizeGameOfLifeWith3By3()
     {
       var gol = new Game.GameOfLife(3, 3);
-      gol.Initialize(
+      gol.Seed(
         CreateCells(
           "   ",
           "   ",
@@ -39,7 +39,7 @@ namespace GameOfLifeTest
     public void CanInitalizeGameOfLifeWith4By4()
     {
       var gol = new Game.GameOfLife(4, 4);
-      gol.Initialize(
+      gol.Seed(
         CreateCells(
           "    ",
           "    ",
@@ -57,13 +57,13 @@ namespace GameOfLifeTest
     public void CanKillCellWithNoNeighbours()
     {
       var gol = new Game.GameOfLife(3, 3);
-      gol.Initialize(CreateCells(
+      gol.Seed(CreateCells(
         "   ",
         " * ",
         "   ")
         );
 
-      gol.Proces();
+      gol.Tick();
 
       Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
       Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("   "), "2");
@@ -74,14 +74,14 @@ namespace GameOfLifeTest
     public void CanKillCellWithOneNeighbour()
     {
       var gol = new Game.GameOfLife(3, 3);
-      gol.Initialize(
+      gol.Seed(
         CreateCells(
           " * ",
           " * ",
           "   ")
         );
 
-      gol.Proces();
+      gol.Tick();
 
       Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
       Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("   "), "2");
@@ -92,14 +92,14 @@ namespace GameOfLifeTest
     public void CanLeaveCellWithTwoNeighbours()
     {
       var gol = new Game.GameOfLife(3, 3);
-      gol.Initialize(
+      gol.Seed(
         CreateCells(
           "  *",
           " * ",
           "*  ")
         );
 
-      gol.Proces();
+      gol.Tick();
 
       Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
       Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo(" * "), "2");
@@ -110,14 +110,14 @@ namespace GameOfLifeTest
     public void CanLeaveCellWithThreeNeighbours()
     {
       var gol = new Game.GameOfLife(3, 3);
-      gol.Initialize(
+      gol.Seed(
         CreateCells(
           "*  ",
           " **",
           "*  ")
         );
 
-      gol.Proces();
+      gol.Tick();
 
       Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo(" * "), "1");
       Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("** "), "2");
@@ -128,14 +128,14 @@ namespace GameOfLifeTest
     public void CanKillCellWithFourNeighbours()
     {
       var gol = new Game.GameOfLife(3, 3);
-      gol.Initialize(
+      gol.Seed(
         CreateCells(
           "* *",
           " * ",
           "* *")
         );
 
-      gol.Proces();
+      gol.Tick();
 
       Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo(" * "), "1");
       Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("* *"), "2");
@@ -146,14 +146,14 @@ namespace GameOfLifeTest
     public void CanWakeCellWithThreeNeighbours()
     {
       var gol = new Game.GameOfLife(3, 3);
-      gol.Initialize(
+      gol.Seed(
         CreateCells(
           "* *",
           "   ",
           "*  ")
         );
 
-      gol.Proces();
+      gol.Tick();
 
       Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
       Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo(" * "), "2");
@@ -164,14 +164,14 @@ namespace GameOfLifeTest
     public void CanDoNothingWithFourNeighbours()
     {
       var gol = new Game.GameOfLife(3, 3);
-      gol.Initialize(
+      gol.Seed(
         CreateCells(
           "* *",
           "   ",
           "* *")
         );
 
-      gol.Proces();
+      gol.Tick();
 
       Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
       Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("   "), "2");
