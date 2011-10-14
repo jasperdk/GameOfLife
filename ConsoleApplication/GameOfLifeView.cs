@@ -2,6 +2,9 @@
 
 namespace ConsoleApplication
 {
+  /// <summary>
+  /// Game of life-view model for a simple line based representation
+  /// </summary>
   public class GameOfLifeView
   {
     private readonly GameOfLife _gameOfLife;
@@ -19,16 +22,19 @@ namespace ConsoleApplication
       }
     }
 
+    /// <summary>
+    /// Get current state of the game of life
+    /// </summary>
     public string[] Lines
     {
       get
       {
-        var lines = new string[_gameOfLife.Cells.Length];
-        for (int index = 0; index < _gameOfLife.Cells.Length; index++)
+        var lines = new string[_gameOfLife.GameMap.RowCount];
+        for (int row = 1; row <= _gameOfLife.GameMap.RowCount; row++)
         {
-          foreach (var cell in _gameOfLife.Cells[index])
+          for (int column = 1; column <= _gameOfLife.GameMap.ColumnCount; column++)
           {
-            lines[index] += cell.ToString();
+            lines[row - 1] += _gameOfLife.GameMap.GetCell(row, column).ToString();
           }
         }
 
@@ -36,15 +42,18 @@ namespace ConsoleApplication
       }
     }
 
-    public void Initialize(params string[] lines)
+    /// <summary>
+    /// Seed game of life
+    /// </summary>
+    /// <param name="lines">each charater represents a cell in game of life. '*'=alive ' '=dead</param>
+    public void Seed(params string[] lines)
     {
-      var cells = new Cell[lines.Length][];
-      for (int row = 0; row < lines.Length; row++)
+      var cells = new Cell[lines.Length, lines[0].Length];
+      for (int row = 1; row <= lines.Length; row++)
       {
-        cells[row] = new Cell[lines[row].Length];
-        for (int column = 0; column < lines[row].Length; column++)
+        for (int column = 1; column <= lines[row - 1].Length; column++)
         {
-          cells[row][column] = new Cell(row, column, lines[row][column]);
+          cells[row - 1, column - 1] = new Cell(row, column, lines[row - 1][column - 1]);
         }
       }
 

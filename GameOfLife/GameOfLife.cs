@@ -4,65 +4,71 @@ using System.Linq;
 
 namespace Game
 {
+  /// <summary>
+  /// Implementation of Game of life as described here http://en.wikipedia.org/wiki/Conway's_Game_of_Life
+  /// </summary>
   public class GameOfLife
   {
-    private Cell[][] _cells;
+
+    private readonly GameMap _gameMap;
 
     public GameOfLife(int rows, int columns)
     {
-      _cells = new Cell[rows][];
-      for (int i = 0; i < rows; i++)
-      {
-        _cells[i] = new Cell[columns];
-      }
+      if (rows < 1 || columns < 1)
+        throw new ArgumentException("Invalid game configuration!");
+      _gameMap = new GameMap(rows, columns);
     }
 
-    public Cell[][] Cells
+    /// <summary>
+    /// Current generation
+    /// </summary>
+    public GameMap GameMap
     {
-      get { return _cells; }
+      get { return _gameMap; }
     }
 
-    public void Seed(Cell[][] cells)
+    /// <summary>
+    /// Set initial pattern 
+    /// </summary>
+    /// <param name="initialPattern"></param>
+    public void Seed(Cell[,] initialPattern)
     {
-      var columns = cells[0].Length;
-      if (cells.Any(cellRow => cellRow.Length != columns))
-      {
-        throw new ArgumentException("All rows must contain the same number of columns!");
-      }
+      if (initialPattern.GetLength(0) != _gameMap.RowCount || initialPattern.GetLength(1) != _gameMap.ColumnCount)
+        throw new ArgumentException("Invalid game configuration!");
 
-      _cells = cells;
+      _gameMap.Seed(initialPattern);
     }
 
+    /// <summary>
+    /// Greate new generation of game
+    /// </summary>
     public void Tick()
     {
-      var newCells = CopyCells();
+      var nextGenerationgameMap = _gameMap.Clone() as GameMap;
 
-      foreach (var cellRow in _cells)
+      foreach (var cell in _gameMap)
       {
-        foreach (var cell in cellRow)
-        {
-          var livingNeighbours = GetLivingNeighboursCount(cell);
-          ExecuteKillRule(cell, livingNeighbours, newCells);
-          ExecuteWakeupRule(cell, livingNeighbours, newCells);
-        }
+        var livingNeighbours = GetLivingNeighboursCount(cell);
+        ExecuteKillRule(nextGenerationgameMap, cell, livingNeighbours);
+        ExecuteWakeupRule(nextGenerationgameMap, cell, livingNeighbours);
       }
 
-      _cells = newCells;
+      _gameMap.Seed(nextGenerationgameMap);
     }
 
-    private static void ExecuteWakeupRule(Cell cell, int livingNeighbours, Cell[][] newCells)
+    private static void ExecuteWakeupRule(GameMap nextGenerationgameMap, Cell cell, int livingNeighbours)
     {
       if (cell.IsDead && livingNeighbours == 3)
       {
-        newCells[cell.Row][cell.Column].WakeUp();
+        nextGenerationgameMap.GetCell(cell.Row, cell.Column).WakeUp();
       }
     }
 
-    private static void ExecuteKillRule(Cell cell, int livingNeighbours, Cell[][] newCells)
+    private static void ExecuteKillRule(GameMap nextGenerationgameMap, Cell cell, int livingNeighbours)
     {
       if (cell.IsAlive && (livingNeighbours < 2 || livingNeighbours > 3))
       {
-        newCells[cell.Row][cell.Column].Kill();
+        nextGenerationgameMap.GetCell(cell.Row, cell.Column).Kill();
       }
     }
 
@@ -75,50 +81,44 @@ namespace Game
     {
       var neighbours = new List<Cell>();
 
-      //Get neighbours from row above
-      if (cell.Row > 0)
-      {
-        AddNeighboursFromRow(neighbours,cell.Row - 1, cell.Column);
-      }
-
-      //Get neighbours from same row
-      if (cell.Column > 0)
-        neighbours.Add(_cells[cell.Row][cell.Column - 1]);
-      if (cell.Column < _cells[cell.Row].Length - 1)
-        neighbours.Add(_cells[cell.Row][cell.Column + 1]);
-
-      //Get neighbours from row below
-      if (cell.Row < _cells.Length - 1)
-      {
-        AddNeighboursFromRow(neighbours,cell.Row + 1, cell.Column);
-      }
+      GetNeighboursFromRowAbove(cell, neighbours);
+      GetNeighboursFromSameRow(cell, neighbours);
+      GetNeighboursFromRowBelow(cell, neighbours);
 
       return neighbours;
     }
 
-    private void AddNeighboursFromRow(List<Cell> neighbours, int rowNumber, int columnNumber)
+    private void GetNeighboursFromRowBelow(Cell cell, List<Cell> neighbours)
     {
-      if (columnNumber > 0)
-        neighbours.Add(_cells[rowNumber][columnNumber - 1]);
-      neighbours.Add(_cells[rowNumber][columnNumber]);
-      if (columnNumber < _cells[rowNumber].Length - 1)
-        neighbours.Add(_cells[rowNumber][columnNumber + 1]);
+      if (cell.Row < _gameMap.RowCount)
+      {
+        AddNeighboursFromRow(neighbours, cell.Row + 1, cell.Column);
+      }
     }
 
-    private Cell[][] CopyCells()
+    private void GetNeighboursFromSameRow(Cell cell, List<Cell> neighbours)
     {
-      var cells = new Cell[_cells.Length][];
-      for (var row = 0; row < _cells.Length; row++)
+      if (cell.Column > 1)
+        neighbours.Add(_gameMap.GetCell(cell.Row, cell.Column - 1));
+      if (cell.Column < _gameMap.ColumnCount)
+        neighbours.Add(_gameMap.GetCell(cell.Row, cell.Column + 1));
+    }
+
+    private void GetNeighboursFromRowAbove(Cell cell, List<Cell> neighbours)
+    {
+      if (cell.Row > 1)
       {
-        cells[row] = new Cell[_cells[row].Length];
-
-        for (var column = 0; column < _cells[row].Length; column++)
-        {
-          cells[row][column] = new Cell(_cells[row][column]);
-        }
+        AddNeighboursFromRow(neighbours, cell.Row - 1, cell.Column);
       }
+    }
 
-      return cells;
+    private void AddNeighboursFromRow(List<Cell> neighbours, int rowNumber, int columnNumber)
+    {
+      if (columnNumber > 1)
+        neighbours.Add(_gameMap.GetCell(rowNumber, columnNumber - 1));
+      neighbours.Add(_gameMap.GetCell(rowNumber, columnNumber));
+      if (columnNumber < _gameMap.ColumnCount)
+        neighbours.Add(_gameMap.GetCell(rowNumber, columnNumber + 1));
     }
   }
 }

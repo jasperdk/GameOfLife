@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Game;
 using NUnit.Framework;
 
-namespace GameOfLifeTest
+namespace GameOfLife.Test
 {
   [TestFixture]
   public class GameOfLifeTest
@@ -13,11 +11,8 @@ namespace GameOfLifeTest
     public void CanCreateGameOfLife()
     {
       var gol = new Game.GameOfLife(3, 3);
-      Assert.That(gol.Cells.Length, Is.EqualTo(3));
-      foreach (var cellRow in gol.Cells)
-      {
-        Assert.That(cellRow.Length, Is.EqualTo(3));
-      }
+      Assert.That(gol.GameMap.RowCount, Is.EqualTo(3));
+      Assert.That(gol.GameMap.ColumnCount, Is.EqualTo(3));
     }
 
     [Test]
@@ -31,23 +26,18 @@ namespace GameOfLifeTest
           "   ")
         );
 
-      Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
-      Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("   "), "2");
-      Assert.That(CellsToString(gol.Cells[2]), Is.EqualTo("   "), "3");
+      Assert.That(RowToString(gol.GameMap, 1), Is.EqualTo("   "), "On or more cells is waken up in the first row");
+      Assert.That(RowToString(gol.GameMap, 2), Is.EqualTo("   "), "On or more cells is waken up in the second row");
+      Assert.That(RowToString(gol.GameMap, 3), Is.EqualTo("   "), "On or more cells is waken up in the third row");
     }
 
     [Test]
     public void CanHandleWrongSeed()
     {
-      var gol = new Game.GameOfLife(3, 3);
+
       Assert.Throws<ArgumentException>(delegate
                                          {
-                                           gol.Seed(
-                                             CreateCells(
-                                               "   ",
-                                               "  ",
-                                               " ")
-                                             );
+                                           new Game.GameOfLife(1, 0);
                                          }
         );
     }
@@ -64,10 +54,10 @@ namespace GameOfLifeTest
           "    ")
         );
 
-      Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("    "), "1");
-      Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("    "), "2");
-      Assert.That(CellsToString(gol.Cells[2]), Is.EqualTo("    "), "3");
-      Assert.That(CellsToString(gol.Cells[3]), Is.EqualTo("    "), "4");
+      Assert.That(RowToString(gol.GameMap, 1), Is.EqualTo("    "), "On or more cells is waken up in the first row");
+      Assert.That(RowToString(gol.GameMap, 2), Is.EqualTo("    "), "On or more cells is waken up in the second row");
+      Assert.That(RowToString(gol.GameMap, 3), Is.EqualTo("    "), "On or more cells is waken up in the third row");
+      Assert.That(RowToString(gol.GameMap, 4), Is.EqualTo("    "), "On or more cells is waken up in the fourth row");
     }
 
     [Test]
@@ -82,9 +72,9 @@ namespace GameOfLifeTest
 
       gol.Tick();
 
-      Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
-      Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("   "), "2");
-      Assert.That(CellsToString(gol.Cells[2]), Is.EqualTo("   "), "3");
+      Assert.That(RowToString(gol.GameMap, 1), Is.EqualTo("   "), "On or more cells is waken up in the first row");
+      Assert.That(RowToString(gol.GameMap, 2), Is.EqualTo("   "), "On or more cells is waken up in the second row");
+      Assert.That(RowToString(gol.GameMap, 3), Is.EqualTo("   "), "On or more cells is waken up in the third row");
     }
 
     [Test]
@@ -100,9 +90,9 @@ namespace GameOfLifeTest
 
       gol.Tick();
 
-      Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
-      Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("   "), "2");
-      Assert.That(CellsToString(gol.Cells[2]), Is.EqualTo("   "), "3");
+      Assert.That(RowToString(gol.GameMap, 1), Is.EqualTo("   "), "On or more cells is waken up in the first row");
+      Assert.That(RowToString(gol.GameMap, 2), Is.EqualTo("   "), "On or more cells is waken up in the second row");
+      Assert.That(RowToString(gol.GameMap, 3), Is.EqualTo("   "), "On or more cells is waken up in the third row");
     }
 
     [Test]
@@ -118,9 +108,9 @@ namespace GameOfLifeTest
 
       gol.Tick();
 
-      Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
-      Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo(" * "), "2");
-      Assert.That(CellsToString(gol.Cells[2]), Is.EqualTo("   "), "3");
+      Assert.That(RowToString(gol.GameMap, 1), Is.EqualTo("   "), "Error in first row");
+      Assert.That(RowToString(gol.GameMap, 2), Is.EqualTo(" * "), "Error in second row");
+      Assert.That(RowToString(gol.GameMap, 3), Is.EqualTo("   "), "Error in third row");
     }
 
     [Test]
@@ -136,9 +126,9 @@ namespace GameOfLifeTest
 
       gol.Tick();
 
-      Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo(" * "), "1");
-      Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("** "), "2");
-      Assert.That(CellsToString(gol.Cells[2]), Is.EqualTo(" * "), "3");
+      Assert.That(RowToString(gol.GameMap, 1), Is.EqualTo(" * "), "Error in first row");
+      Assert.That(RowToString(gol.GameMap, 2), Is.EqualTo("** "), "Error in second row");
+      Assert.That(RowToString(gol.GameMap, 3), Is.EqualTo(" * "), "Error in third row");
     }
 
     [Test]
@@ -154,9 +144,9 @@ namespace GameOfLifeTest
 
       gol.Tick();
 
-      Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo(" * "), "1");
-      Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("* *"), "2");
-      Assert.That(CellsToString(gol.Cells[2]), Is.EqualTo(" * "), "3");
+      Assert.That(RowToString(gol.GameMap, 1), Is.EqualTo(" * "), "Error in first row");
+      Assert.That(RowToString(gol.GameMap, 2), Is.EqualTo("* *"), "Error in second row");
+      Assert.That(RowToString(gol.GameMap, 3), Is.EqualTo(" * "), "Error in third row");
     }
 
     [Test]
@@ -172,9 +162,9 @@ namespace GameOfLifeTest
 
       gol.Tick();
 
-      Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
-      Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo(" * "), "2");
-      Assert.That(CellsToString(gol.Cells[2]), Is.EqualTo("   "), "3");
+      Assert.That(RowToString(gol.GameMap, 1), Is.EqualTo("   "), "Error in first row");
+      Assert.That(RowToString(gol.GameMap, 2), Is.EqualTo(" * "), "Error in second row");
+      Assert.That(RowToString(gol.GameMap, 3), Is.EqualTo("   "), "Error in third row");
     }
 
     [Test]
@@ -190,25 +180,48 @@ namespace GameOfLifeTest
 
       gol.Tick();
 
-      Assert.That(CellsToString(gol.Cells[0]), Is.EqualTo("   "), "1");
-      Assert.That(CellsToString(gol.Cells[1]), Is.EqualTo("   "), "2");
-      Assert.That(CellsToString(gol.Cells[2]), Is.EqualTo("   "), "3");
+      Assert.That(RowToString(gol.GameMap, 1), Is.EqualTo("   "), "Error in first row");
+      Assert.That(RowToString(gol.GameMap, 2), Is.EqualTo("   "), "Error in second row");
+      Assert.That(RowToString(gol.GameMap, 3), Is.EqualTo("   "), "Error in third row");
     }
 
-    private static string CellsToString(IEnumerable<Cell> cells)
+    [Test]
+    public void CanHandleAllAlive()
     {
-      return cells.Aggregate(string.Empty, (current, cell) => current + cell.ToString());
+      var gol = new Game.GameOfLife(3, 3);
+      gol.Seed(
+        CreateCells(
+          "***",
+          "***",
+          "***")
+        );
+
+      gol.Tick();
+
+      Assert.That(RowToString(gol.GameMap, 1), Is.EqualTo("* *"), "Error in first row");
+      Assert.That(RowToString(gol.GameMap, 2), Is.EqualTo("   "), "Error in second row");
+      Assert.That(RowToString(gol.GameMap, 3), Is.EqualTo("* *"), "Error in third row");
     }
 
-    private static Cell[][] CreateCells(params string[] s)
+    private static string RowToString(GameMap gameMap, int row)
     {
-      var cells = new Cell[s.Length][];
-      for (int row = 0; row < s.Length; row++)
+      string output = "";
+      for (int column = 1; column <= gameMap.ColumnCount; column++)
       {
-        cells[row] = new Cell[s[row].Length];
-        for (int column = 0; column < s[row].Length; column++)
+        output += gameMap.GetCell(row, column);
+      }
+
+      return output;
+    }
+
+    public static Cell[,] CreateCells(params string[] s)
+    {
+      var cells = new Cell[s.Length, s[0].Length];
+      for (int row = 1; row <= s.Length; row++)
+      {
+        for (int column = 1; column <= s[row - 1].Length; column++)
         {
-          cells[row][column] = new Cell(row, column, s[row][column]);
+          cells[row - 1, column - 1] = new Cell(row, column, s[row - 1][column - 1]);
         }
       }
 

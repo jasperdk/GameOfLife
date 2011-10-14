@@ -2,9 +2,6 @@
 {
   public enum CellState { Dead, Alive }
 
-  /// <summary>
-  /// Single cell in the game of life
-  /// </summary>
   public class Cell
   {
     public const char Alive = '*';
@@ -15,23 +12,16 @@
 
     private CellState _state;
 
-    /// <summary>
-    /// Create cell with initial state
-    /// </summary>
-    /// <param name="row"></param>
-    /// <param name="column"></param>
-    /// <param name="state"></param>
     public Cell(int row, int column, char state)
     {
       _row = row;
       _column = column;
-      _state = state == Alive ? CellState.Alive : CellState.Dead;
+      if (state == Alive)
+        _state = CellState.Alive;
+      else
+        _state = CellState.Dead;
     }
 
-    /// <summary>
-    /// Create cell with same state as <paramref name="cell"/>
-    /// </summary>
-    /// <param name="cell"></param>
     public Cell(Cell cell)
       : this(cell.Row, cell.Column, cell.State)
     {
